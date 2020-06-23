@@ -11,7 +11,7 @@ export class Model {
             method: method,
             contentType: 'application/json',
             async: async,
-            data: method == METHOD_HTTP.get ? '' : JSON.stringify(data),
+            data: method == METHOD_HTTP.get ? '' : JSON.stringify(data)
         });
     }
 }

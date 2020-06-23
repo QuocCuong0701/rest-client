@@ -8,8 +8,9 @@ import {Task} from "../domain/Task";
 export class PersonService {
     persons: Person[] = null;
 
-    getAll(keyword: string = '', status?: string, page: number = 1, limit: number = 10): Person[] {
-        let url: string = ENDPOINT.person.list + `?page=${page}&limit=${limit}&keyword=${keyword}${status == null ? '' : `&status=${status}`}`;
+    // Get All People
+    getAll(keyword: string = '', status?: string, page: number = 1, limit: number = 10, personId?: number): Person[] {
+        let url: string = ENDPOINT.person.list + `?page=${page}&limit=${limit}&keyword=${keyword}${status == null ? '' : `&status=${status}`}${personId == null ? '' : `&personId=${personId}`}`;
 
         Model.callServer(url, METHOD_HTTP.get, false)
             .done((res: Success) => {
@@ -22,12 +23,31 @@ export class PersonService {
         this.persons = persons;
     }
 
+    // Get Task Bby Id
     getTasksByPersonId(id: number): Task[] {
-        if (null != this.persons) {
-            this.persons.forEach((p) => {
-                if (p.id === id) return p.tasks;
-            })
-        }
+        let tasks: Task[] = null;
+        // let url:string=ENDPOINT.person.
         return null;
+    }
+
+    // Get A Person
+    getPerson(id: number): Person {
+        let person: Person = null;
+        let url: string = ENDPOINT.person.findById + `${id}`;
+        Model.callServer(url, METHOD_HTTP.get, false)
+            .done((res: any) => {
+                person = res as Person;
+            });
+        return person;
+    }
+
+    // Update A Person
+    updatePerson(person: Person): Person {
+        let url = ENDPOINT.person.updatePerson;
+        Model.callServer(url, METHOD_HTTP.post, false, person)
+            .done((res: any) => {
+                person = res as Person;
+            });
+        return person;
     }
 }

@@ -10,8 +10,14 @@ export class Person {
     dob: any;
     salaryFormat: string;
     dobFormat: string;
-    tasks: Task[]
+    hasTask: boolean;
+    tasks: Task[];
+
+    constructor(id: number) {
+        this.id = id;
+    }
 }
+
 
 export enum Status {
     ACTIVE = "ACTIVE",
