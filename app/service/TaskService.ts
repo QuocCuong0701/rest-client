@@ -18,7 +18,7 @@ export class TaskService {
     // Save A New Task
     saveTask(task: Task): Task {
         let url: string = ENDPOINT.task.saveTask;
-        Model.callServer(url, METHOD_HTTP.post, false, task)
+        Model.callServer(url, METHOD_HTTP.post,false , task)
             .done((res: any) => {
                 task = res as Task;
             });

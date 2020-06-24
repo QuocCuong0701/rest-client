@@ -5,7 +5,7 @@ import {METHOD_HTTP} from "../util/Constants";
 
 export class Model {
 
-    public static callServer(url: string, method: string, async: boolean = true, data: Object = {}): jqXHR<Success> {
+    public static callServer(url: string, method: string, async: boolean =true, data: Object = {}): jqXHR<Success> {
         return $.ajax({
             url: url,
             method: method,

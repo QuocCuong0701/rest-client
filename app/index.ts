@@ -112,9 +112,9 @@ export class Index {
             let date = Index.convertMillisecondToInputDate(person.dob);
             formElm.find('input[name="dob"]').val(date);
 
-            let selectElm = formElm.find('select[name="status"]');
+            /*let selectElm = formElm.find('select[name="status"]');
             selectElm.val(person.status);
-            selectElm.prop('disabled', person.hasTask);
+            selectElm.prop('disabled', person.hasTask);*/
             $('#modalEditPerson').modal('show');
         });
 
@@ -126,6 +126,7 @@ export class Index {
                 data["" + v.name + ""] = v.value;
             });
             data['id'] = personId;
+            data['status'] = $('#formEditPerson').find('select[name="status"]').val();
             self.personService.updatePerson(data as Person);
             self.bindData(self.personService.getAll());
             $('#modalEditPerson').modal('hide');
@@ -143,7 +144,7 @@ export class Index {
             let title = String(formAddTask.find('input[name="title"]').val());
             let description = String(formAddTask.find('input[name="description"]').val());
 
-            task = new Task(null, title, description, new Person(personId), null);
+            task = new Task(null, title, description, new PersonService().getPerson(personId), null);
             self.taskService.saveTask(task);
 
             $('#addTaskModal').modal('hide');
