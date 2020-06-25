@@ -16,9 +16,13 @@ export class TaskService {
     }
 
     // Save A New Task
-    saveTask(task: Task): Task {
-        let url: string = ENDPOINT.task.saveTask;
+    saveTask(task: any): any {
+        let url: string = ENDPOINT.task.saveTask + "?lang=vi";
         Model.callServer(url, METHOD_HTTP.post,false , task)
+            .fail((res: any) => {
+                console.log(res);
+                task = res as Task;
+            })
             .done((res: any) => {
                 task = res as Task;
             });

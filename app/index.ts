@@ -134,6 +134,7 @@ export class Index {
 
         // Show Add Task Modal
         $('#taskModal').on('click', '#btnAddTask', function () {
+            $('#tagError').remove();
             $('#addTaskModal').modal('show');
         });
 
@@ -144,11 +145,19 @@ export class Index {
             let title = String(formAddTask.find('input[name="title"]').val());
             let description = String(formAddTask.find('input[name="description"]').val());
 
-            task = new Task(null, title, description, new PersonService().getPerson(personId), null);
-            self.taskService.saveTask(task);
+            task = new Task(null, title, description, new Person(personId), null);
+            let tasks = self.taskService.saveTask(task);
+            let tagError = $("<p id='tagError' style='color: red;'></p>");
 
-            $('#addTaskModal').modal('hide');
-            $('#taskModal').modal('hide');
+            if (title.length > 0) {
+                $('#addTaskModal').modal('hide');
+                $('#taskModal').modal('hide');
+            } else {
+                $('#tagError').remove();
+                // @ts-ignore
+                let txt = tagError.text(tasks.responseJSON.errors.title);
+                formAddTask.find('input[name="title"]').after(txt);
+            }
         });
     }
 
