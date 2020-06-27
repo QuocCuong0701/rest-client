@@ -56,10 +56,12 @@ export class Index {
         }
     }
 
-    private bindTaskData(persons: Person[]): void {
+    private bindTaskData(tasks: Task[]): void {
         let content = '';
-        persons.forEach((person: Person) => {
-            person.tasks.forEach(task => {
+        if (jQuery.isEmptyObject(tasks)) {
+            content += `<h3><i>Không có công việc nào.</i></h3>`;
+        } else {
+            tasks.forEach((task: Task) => {
                 content += `<div class="card">  
                                 <div class="card-header" id="heading${task.id}">
                                     <h2 class="mb-0">
@@ -76,7 +78,8 @@ export class Index {
                                 </div>
                             </div>`;
             });
-        });
+        }
+
         $('#accordionExample').html(content);
     }
 
@@ -85,6 +88,8 @@ export class Index {
         let self = this;
         let rootElement = $('#persons');
         let task: Task;
+        let tasks: Task[];
+
         $("#btn-search").on('click', () => {
             let keyword = String($("input[name='keyword']").val());
             this.bindData(this.personService.getAll(keyword));
@@ -92,16 +97,18 @@ export class Index {
 
         // Show Tasks
         rootElement.on('click', '#btn-show-task', function () {
+            $('#tagError').remove();
             let personId = Number($(this).attr('data-id'));
             $('#formAddTask').find('input[name="personId"]').val(personId);
-
-            self.bindTaskData(self.personService.getAll(undefined, undefined, undefined, undefined, personId));
+            tasks = self.taskService.getTasksByPersonId(personId);
+            self.bindTaskData(tasks);
             $('#taskModal').modal('show');
         });
 
         // Edit Information
         let personId: number;
         rootElement.on('click', '#btn-edit-person', function () {
+            $('#tagError').remove();
             let person: Person = self.personService.getPerson(Number($(this).attr('data-id')));
             personId = person.id;
             let formElm = $('#formEditPerson');
@@ -112,51 +119,82 @@ export class Index {
             let date = Index.convertMillisecondToInputDate(person.dob);
             formElm.find('input[name="dob"]').val(date);
 
-            /*let selectElm = formElm.find('select[name="status"]');
+            let selectElm = formElm.find('select[name="status"]');
             selectElm.val(person.status);
-            selectElm.prop('disabled', person.hasTask);*/
+            if (person.status == "ACTIVE" && person.hasTask == true) {
+                selectElm.prop('disabled', true);
+            } else {
+                selectElm.prop('disabled', false);
+            }
             $('#modalEditPerson').modal('show');
         });
 
         // Update Person
+        $('#addTask').keypress(function (e) {
+            let formEditPerson = $('#formEditPerson');
+            if (e.which == 13) {
+                e.preventDefault();
+            }
+            let data = {};
+            let formData = formEditPerson.serializeArray();
+            $.each(formData, function (i, v) {
+                data["" + v.name + ""] = v.value;
+            });
+            data['id'] = personId;
+            data['status'] = formEditPerson.find('select[name="status"]').val();
+
+            let person = self.personService.updatePerson(data as Person);
+
+            let tagError = $("<p id='tagError' style='color: red;'></p>");
+            if (!jQuery.isEmptyObject(person.responseJSON)) {
+                $('#tagError').remove();
+                // @ts-ignore
+                let txt = tagError.text(person.responseJSON.errors.name);
+                formEditPerson.find('input[name="name"]').after(txt);
+            } else {
+                self.bindData(self.personService.getAll());
+                $('#modalEditPerson').modal('hide');
+            }
+
+        });
         $('#modalEditPerson').on('click', '#btnUpdatePerson', function () {
+            $('#addTask').keypress();
+        });
+
+        /*$('#modalEditPerson').on('click', '#btnUpdatePerson', function () {
             let data = {};
             let formData = $('#formEditPerson').serializeArray();
             $.each(formData, function (i, v) {
                 data["" + v.name + ""] = v.value;
             });
             data['id'] = personId;
-            data['status'] = $('#formEditPerson').find('select[name="status"]').val();
+            data['status']=$('#formEditPerson').find('select[name="status"]').val();
             self.personService.updatePerson(data as Person);
             self.bindData(self.personService.getAll());
             $('#modalEditPerson').modal('hide');
-        });
-
-        // Show Add Task Modal
-        $('#taskModal').on('click', '#btnAddTask', function () {
-            $('#tagError').remove();
-            $('#addTaskModal').modal('show');
-        });
+        });*/
 
         // Add New Task
-        $('#addTaskModal').on('click', '#btnSaveTask', function () {
+        $('#taskModal').on('click', '#btnAddTask', function () {
             let formAddTask = $('#formAddTask');
             let personId = Number(formAddTask.find('input[name="personId"]').val());
             let title = String(formAddTask.find('input[name="title"]').val());
             let description = String(formAddTask.find('input[name="description"]').val());
 
             task = new Task(null, title, description, new Person(personId), null);
-            let tasks = self.taskService.saveTask(task);
+            task = self.taskService.saveTask(task);
             let tagError = $("<p id='tagError' style='color: red;'></p>");
 
-            if (title.length > 0) {
-                $('#addTaskModal').modal('hide');
-                $('#taskModal').modal('hide');
-            } else {
+            // @ts-ignore
+            if (!jQuery.isEmptyObject(task.responseJSON)) {
                 $('#tagError').remove();
                 // @ts-ignore
-                let txt = tagError.text(tasks.responseJSON.errors.title);
+                let txt = tagError.text(task.responseJSON.errors.title);
                 formAddTask.find('input[name="title"]').after(txt);
+            } else {
+                tasks.push(task);
+                formAddTask.trigger("reset");
+                self.bindTaskData(tasks);
             }
         });
     }
@@ -164,14 +202,14 @@ export class Index {
     // Convert Date
     private static convertMillisecondToInputDate(value: number): string {
         let date = new Date(value);
-        return `${date.getFullYear()}-${date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1}-${date.getDate()}`;
+        return `${date.getFullYear()}-${date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1}-${date.getDate() < 10 ? `0${date.getDate()}` : date.getDate()}`;
+        //return `${date.getFullYear()}-${date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1}-${date.getDate()}`;
     }
 
     // Find By Status
     private on_change(): void {
         $('.filter select[name="status"]').on('change', () => {
             let valOpt: string = String($('.filter select[name="status"] option:checked').val());
-
             if (valOpt != 'ALL') {
                 this.bindData(this.personService.getAll(undefined, valOpt));
             } else {

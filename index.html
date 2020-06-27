@@ -88,24 +88,6 @@
                 </button>
             </div>
             <div class="modal-body" id="modalBody">
-                <div class="accordion" id="accordionExample"></div>
-                <button id="btnAddTask" type="button" class="btn btn-info" style="margin-top: 10px; float: right;"><i class="fa fa-plus"></i> Add Task</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!--Modal Add Task-->
-<div class="modal fade" id="addTaskModal">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-dark">
-                <h5 class="modal-title text-white">Add Task</h5>
-                <button type="button" class="close text-light" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body" id="modalBody1">
                 <form id="formAddTask">
                     <input type="hidden" name="personId"/>
                     <div class="form-group">
@@ -114,17 +96,19 @@
                     </div>
                     <div class="form-group">
                         <label>Description</label>
-                        <input type="search" class="form-control" name="description">
+                        <input id="addTask" type="search" class="form-control" name="description">
                     </div>
-                    <div class="form-group text-right">
-                        <button type="button" id="btnSaveTask" class="btn btn-primary w-25">Submit</button>
+                    <div class="center form-group text-right">
+                        <button id="btnAddTask" type="button" class="btn btn-info w-25"><i class="fa fa-plus"></i> Add Task</button>
                     </div>
                 </form>
+                <div class="accordion" id="accordionExample"></div>
             </div>
         </div>
     </div>
 </div>
 
+<!--Form Edit Person-->
 <div class="modal fade" tabindex="-1" role="dialog" id="modalEditPerson">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -143,11 +127,11 @@
                     </div>
                     <div class="form-group">
                         <label>Age</label>
-                        <input type="number" class="form-control" name="age">
+                        <input type="number" min="1" class="form-control" name="age">
                     </div>
                     <div class="form-group">
                         <label>Salary</label>
-                        <input type="number" step="0.1" class="form-control" name="salary">
+                        <input type="number" step="1" min="1" class="form-control" name="salary">
                     </div>
                     <div class="form-group">
                         <label>Date of Birth</label>

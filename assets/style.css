@@ -26,3 +26,8 @@
     transition: .3s;
     opacity: .7;
 }
+
+.center{
+    display: flex;
+    justify-content: center;
+}

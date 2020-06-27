@@ -23,13 +23,6 @@ export class PersonService {
         this.persons = persons;
     }
 
-    // Get Task Bby Id
-    getTasksByPersonId(id: number): Task[] {
-        let tasks: Task[] = null;
-        // let url:string=ENDPOINT.person.
-        return null;
-    }
-
     // Get A Person
     getPerson(id: number): Person {
         let person: Person = null;
@@ -42,12 +35,11 @@ export class PersonService {
     }
 
     // Update A Person
-    updatePerson(person: Person): Person {
+    updatePerson(person: any): any {
         let url = ENDPOINT.person.updatePerson;
         Model.callServer(url, METHOD_HTTP.post, false, person)
-            .done((res: any) => {
-                person = res as Person;
-            });
+            .done((res: any) => person = res as Person)
+            .fail((res: any) => person = res as Person);
         return person;
     }
 }

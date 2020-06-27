@@ -4,8 +4,8 @@ import {Model} from "../repo/Model";
 
 export class TaskService {
 
-    // FInd Tasks By Person Id
-    findTaskByPersonId(personId: number): any {
+    // Get Tasks By Person Id
+    getTasksByPersonId(personId: number): any {
         let tasks: Task[];
         let url = ENDPOINT.task.findTasksByPersonId + `${personId}`;
         Model.callServer(url, METHOD_HTTP.get, false)
@@ -20,7 +20,6 @@ export class TaskService {
         let url: string = ENDPOINT.task.saveTask + "?lang=vi";
         Model.callServer(url, METHOD_HTTP.post,false , task)
             .fail((res: any) => {
-                console.log(res);
                 task = res as Task;
             })
             .done((res: any) => {

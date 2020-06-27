@@ -4,7 +4,7 @@ export const ENDPOINT = {
     person: {
         list: `${BASE_URL}/person`,
         findById: `${BASE_URL}/person/`,
-        updatePerson: `${BASE_URL}/person/update`
+        updatePerson: `${BASE_URL}/person/update?lang=vi`
     },
     task: {
         findTasksByPersonId: `${BASE_URL}/task/`,

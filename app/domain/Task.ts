@@ -4,10 +4,9 @@ export class Task {
     id: number;
     title: string;
     description: string;
+    image: string;
     personId: number;
     person: Person;
-    image: string;
-
 
     constructor(id: number, title: string, description: string, person: Person, image: string) {
         this.id = id;
